@@ -1,3 +1,8 @@
+SCORE_LAMBDA_FOUND = 25
+SCORE_ABORT_BONUS  = 25
+SCORE_WIN_BONUS    = 50
+SCORE_STEP_COST    = 1
+
 class Map:
     def __init__(self, lines, metadata = None):
         self.initialGrid = map(lambda l: bytearray(b"" + l), lines)
@@ -22,6 +27,8 @@ class Map:
             self.flood = 0
             self.proof = 10
         self.drown = self.proof
+
+        self.win = False
 
         if not self.isValid():
             pass
@@ -51,7 +58,7 @@ class Map:
         return self.cmds.endswith("A")
 
     def isCompleted(self):
-        pass
+        return self.win
     
     def isDead(self):
         """ Either hit by a rock or drowned"""
@@ -75,6 +82,13 @@ class Map:
     def getMaxCommandCount(self):
         return self.maxCmdCount
 
+    def getScore(self):
+        lambdaScore = self.__found * SCORE_LAMBDA_FOUND
+        if (self.win):
+            lambdaScore += self.__found * SCORE_WIN_BONUS
+        elif (self.isAborted()):
+            lambdaScore += self.__found * SCORE_ABORT_BONUS
+        return lambdaScore - len(self.cmds)
 
     def getRobot(self):
         return self.__robot
