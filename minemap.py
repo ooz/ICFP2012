@@ -11,6 +11,7 @@ class Map:
         self.__found   = 0
         self.__robot   = None
         self.cmds = ""
+        self.maxCmdCount = self.n * self.m
 
         if (metadata != None and len(metadata) == 3):
             self.water = metadata[0]
@@ -20,6 +21,7 @@ class Map:
             self.water = 0
             self.flood = 0
             self.proof = 10
+        self.drown = self.proof
 
         if not self.isValid():
             pass
@@ -56,12 +58,23 @@ class Map:
         pass
 
     def isTerminated(self):
-        return (self.isAborted() or self.isCompleted() or self.isDead())
+        return (self.isAborted() 
+                or self.isCompleted() 
+                or self.isDead() 
+                    or (not self.hasCommandsLeft()))
 
+    def hasCommandsLeft(self):
+        return len(self.cmds) < self.maxCmdCount
 
     """ Getters and setters """
     def getSize(self):
         return (self.n, self.m)
+
+    def getCommands(self):
+        return self.cmds
+    def getMaxCommandCount(self):
+        return self.maxCmdCount
+
 
     def getRobot(self):
         return self.__robot
