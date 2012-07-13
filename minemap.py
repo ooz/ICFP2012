@@ -8,6 +8,7 @@ class Map:
             self.n = len(lines[0])
 
         self.__lambdas = 0
+        self.__found   = 0
         self.__robot   = None
 
         if (metadata != None and len(metadata) == 3):
@@ -60,6 +61,11 @@ class Map:
     def getRobot(self):
         return self.__robot
 
+    def getTotalLambdas(self):
+        return self.__lambdas
+    def getFoundLambdas(self):
+        return self.__found
+
     def get(self, x, y):
         if (x >= 0 and y >= 0 and x < self.n and y < self.m):
             return self.lines[y][x]
@@ -111,7 +117,17 @@ class Map:
         self.update()
         return self
     def moveDown(self):
-        self.cmds += "D"
+        x = self.__robot[0]
+        y = self.__robot[1]
+        c = self.get(x, y - 1)
+        if (c in [' ', '.', '\\', "O"]):
+            self.set(x, y, ' ')
+            self.set(x, y - 1, 'R')
+            if (c == '\\'):
+                self.__found += 1
+            self.cmds += "D"
+        else:
+            self.cmds += "W"
         self.update()
         return self
     def wait(self):
