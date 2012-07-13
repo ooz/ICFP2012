@@ -47,5 +47,11 @@ class Robot:
         return self
 
     def solve(self):
+        return self
+
+    def solve(self, tvmode)
+        if (tvmode):
+            return self.solve()
         pass
+        
 
