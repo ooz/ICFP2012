@@ -1,5 +1,5 @@
 class Map:
-    def __init__(self, lines):
+    def __init__(self, lines, metadata = None):
         self.initialLines = lines
         self.lines        = lines
 
@@ -9,12 +9,25 @@ class Map:
 
         # TODO: count lambdas on map
         self.__lambdas = 0
-        
+        # TODO: find robot on map
+        self.__robot = (0, 0)
+
+        if (metadata != None and len(metadata) == 3):
+            self.water = metadata[0]
+            self.flood = metadata[1]
+            self.proof = metadata[2]
+        else:
+            self.water = 0
+            self.flood = 0
+            self.proof = 10
 
     def isAborted(self):
         return self.history.endswith("A")
     def isCompleted(self):
         pass
+    def isDrowned(self):
+        pass
+
     def isValid(self):
         lifts  = 0
         robots = 0
@@ -27,6 +40,9 @@ class Map:
                 elif c == 'O':
                     lifts += 2
         return (robots == 1 and lifts == 1)
+
+    def getRobot(self):
+        return self.__robot
 
     def get(self, x, y):
         if (x >= 0 and y >= 0 and x < self.n and y < self.m):
@@ -52,11 +68,17 @@ class Map:
         for l in reversed(self.lines):
             print l
         return self
+    def printFlooding(self):
+        print "Water " + str(self.water)
+        print "Flooding " + str(self.flood)
+        print "Waterproof " + str(self.proof)
 
     def printAll(self):
         print "Init:"
         self.printInitial()
         print "\nNow:"
         self.printCurrent()
+        print ""
+        self.printFlooding()
         return self
 
