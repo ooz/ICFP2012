@@ -21,7 +21,7 @@ class Map:
             self.flood = 0
             self.proof = 10
 
-""" Map status """
+    """ Map status """
     def isValid(self):
         lifts  = 0
         robots = 0
@@ -46,7 +46,7 @@ class Map:
         pass
 
 
-""" Getters and setters """
+    """ Getters and setters """
     def getSize(self):
         return (self.n, self.m)
 
@@ -63,11 +63,11 @@ class Map:
             self.lines[y][x] = c
         return self
 
-""" Update """
+    """ Update """
     def update(self):
         return self
 
-""" Printing """
+    """ Printing """
     def printInitial(self):
         for l in reversed(self.initialLines):
             print l
@@ -90,7 +90,7 @@ class Map:
         self.printFlooding()
         return self
 
-""" Robot movement """
+    """ Robot movement """
     def moveLeft(self):
         self.cmds += "L"
         self.update()
