@@ -28,4 +28,6 @@ if __name__ == "__main__":
 
     ml = MapLoader()
     m  = ml.mapFromStdin()
-    m.printAll()
+    
+    if (m != None):
+        m.printAll()

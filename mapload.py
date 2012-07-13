@@ -12,6 +12,8 @@ class MapLoader:
         return line
 
     def __mapFromInputLines(self, lines):
+        if lines == []:
+            return None
         lines.reverse()
         maxLength = max(map(lambda l: len(l), lines))
         lines = map(lambda l: self.__padLine(l, maxLength), lines)
