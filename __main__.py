@@ -15,11 +15,7 @@ parser = OptionParser(usage = usage)
 
 parser.add_option("-v", "--verbose",
                   action="store_true", dest="verbose", default=False,
-                  help="Display the solving process live on stdout (each step is delayed to be easier followed by a human).")
-
-parser.add_option("-p", "--print",
-                  action="store_true", dest="print", default=False,
-                  help="Print the solving history to stdout.")
+                  help="Display the solving process live on stdout (each step is delayed to be easier followed by a human). Last line printed is the command sequence.")
 
 
 
@@ -31,5 +27,5 @@ if __name__ == "__main__":
     from mapload import MapLoader
 
     ml = MapLoader()
-    m  = ml.loadMap("maps/contest1.map")
+    m  = ml.mapFromStdin()
     m.printAll()
