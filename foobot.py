@@ -63,12 +63,12 @@ class Robot:
                 print ""
             self.mmap.printCurrent()
             if printScore:
-                print self.mmap.getScore()
+                print "Score " + str(self.mmap.getScore())
         return self
 
     def solveVisual(self):
         self.mmap.printCurrent() 
         while (not self.mmap.isTerminated()):
-            self.executeVisual("D", 1.0, True)
+            self.executeVisual("D", 0.5, True, True)
         return self
 
