@@ -21,13 +21,7 @@ class Map:
             self.flood = 0
             self.proof = 10
 
-    def isAborted(self):
-        return self.history.endswith("A")
-    def isCompleted(self):
-        pass
-    def isDrowned(self):
-        pass
-
+""" Map status """
     def isValid(self):
         lifts  = 0
         robots = 0
@@ -40,6 +34,21 @@ class Map:
                 elif c == 'O':
                     lifts += 2
         return (robots == 1 and lifts == 1)
+
+    def isAborted(self):
+        return self.cmds.endswith("A")
+
+    def isCompleted(self):
+        pass
+    
+    def isDead(self):
+        """ Either hit by a rock or drowned"""
+        pass
+
+
+""" Getters and setters """
+    def getSize(self):
+        return (self.n, self.m)
 
     def getRobot(self):
         return self.__robot
@@ -54,12 +63,11 @@ class Map:
             self.lines[y][x] = c
         return self
 
-    def getSize(self):
-        return (self.n, self.m)
-
+""" Update """
     def update(self):
         return self
 
+""" Printing """
     def printInitial(self):
         for l in reversed(self.initialLines):
             print l
@@ -80,5 +88,30 @@ class Map:
         self.printCurrent()
         print ""
         self.printFlooding()
+        return self
+
+""" Robot movement """
+    def moveLeft(self):
+        self.cmds += "L"
+        self.update()
+        return self
+    def moveRight(self):
+        self.cmds += "R"
+        self.update()
+        return self
+    def moveUp(self):
+        self.cmds += "U"
+        self.update()
+        return self
+    def moveDown(self):
+        self.cmds += "D"
+        self.update()
+        return self
+    def wait(self):
+        self.cmds += "W"
+        self.update()
+        return self
+    def abort(self):
+        self.cmds += "A"
         return self
 
