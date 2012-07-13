@@ -26,9 +26,10 @@ class Map:
                 if c == 'R':
                     robots += 1
                 elif c == 'L':
-        # TODO: check whether only one robot is on the map
-        # TODO: check whether only one (closed) lift is on the map
-        pass
+                    lifts += 1
+                elif c == 'O':
+                    lifts += 2
+        return (robots == 1 and lifts == 1)
 
     def get(self, x, y):
         if (x >= 0 and y >= 0 and x < self.n and y < self.m):
