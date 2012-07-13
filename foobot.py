@@ -46,3 +46,6 @@ class Robot:
                 self.abort()
         return self
 
+    def solve(self):
+        pass
+
