@@ -27,7 +27,7 @@ if __name__ == "__main__":
     from mapload import MapLoader
 
     ml = MapLoader()
-    m  = ml.mapFromStdin()
+    m  = ml.mapFromFile("maps/contest1.map")
     
     if (m != None):
         m.printAll()
