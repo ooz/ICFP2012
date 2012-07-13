@@ -53,6 +53,9 @@ class Map:
         """ Either hit by a rock or drowned"""
         pass
 
+    def isTerminated(self):
+        return (self.isAborted() or self.isCompleted() or self.isDead())
+
 
     """ Getters and setters """
     def getSize(self):
