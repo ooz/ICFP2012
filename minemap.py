@@ -15,46 +15,33 @@ class Map:
         
 
     def isAborted(self):
-        return self.__aborted
+        return self.history.endswith("A")
+    def isCompleted(self):
+        pass
+    def isValid(self):
+        lifts  = 0
+        robots = 0
+        for l in lines:
+            for c in l:
+                if c == 'R':
+                    robots += 1
+                elif c == 'L':
+        # TODO: check whether only one robot is on the map
+        # TODO: check whether only one (closed) lift is on the map
+        pass
 
     def get(self, x, y):
-        if (x > 0 and y > 0 and x <= self.n and y <= self.m):
-            return self.lines[x - 1][y - 1]
+        if (x >= 0 and y >= 0 and x < self.n and y < self.m):
+            return self.lines[y][x]
         return None
+
+    def set(self, x, y, c):
+        if (x >= 0 and y >= 0 and x < self.n and y < self.m):
+            self.lines[y][x] = c
+        return self
 
     def getSize(self):
         return (self.n, self.m)
-
-    def getStepCount(self):
-        return len(self.history)
-    def getLambdaCount(self):
-        return self.__lambdas
-    def getFoundLambdaCount(self):
-        return self.__foundLambdas
-
-    def executeCommands(self, cmds):
-        for c in cmds:
-            pass
-
-    def moveLeft(self):
-        self.history += "L"
-        return self
-    def moveRight(self):
-        self.history += "R"
-        return self
-    def moveUp(self):
-        self.history += "U"
-        return self
-    def moveDown(self):
-        self.history += "D"
-        return self
-    def wait(self):
-        self.history += "W"
-        return self
-    def abort(self):
-        self.history += "A"
-        self.__aborted = True
-        return self
 
     def update(self):
         return self
@@ -67,19 +54,11 @@ class Map:
         for l in reversed(self.lines):
             print l
         return self
-    def printHistory(self):
-        print self.history
-        return self
-
-
 
     def printAll(self):
-        """ Prints the initial and current map as well as the history """
         print "Init:"
         self.printInitial()
         print "\nNow:"
         self.printCurrent()
-        print "\nHistory:"
-        self.printHistory()
         return self
 
