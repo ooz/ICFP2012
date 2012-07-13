@@ -55,13 +55,15 @@ class Robot:
         return self
 
     """ Visual methods, separated to save one condition check :P """
-    def executeVisual(self, cmds, sleepSecs = 0.0, printEmptyLine = False):
+    def executeVisual(self, cmds, sleepSecs = 0.0, printEmptyLine = False, printScore = False):
         for c in cmds:
             self.execute(c)
             time.sleep(sleepSecs)
             if printEmptyLine:
                 print ""
             self.mmap.printCurrent()
+            if printScore:
+                print self.mmap.getScore()
         return self
 
     def solveVisual(self):
