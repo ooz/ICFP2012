@@ -5,9 +5,8 @@ __author__  = "Oliver Zscheyge"
 __email__   = "oliverzscheyge@gmail.com"
 __version__ = "0.1.0"
 
-
-
-# import sys
+import sys
+import signal
 # from   optparse import OptionParser
 # 
 # usage  = "Usage: %prog [options] file(s)" 
@@ -17,10 +16,18 @@ __version__ = "0.1.0"
 #                   action="store_true", dest="verbose", default=False,
 #                   help="Display the solving process live on stdout (each step is delayed to be easier followed by a human). Last line printed is the command sequence.")
 
+BOT = None
+def sigintHandler(signal, frame):
+    if (BOT != None):
+        sys.stdout.flush()
+        print BOT.getCommands()
+        sys.exit(0)
 
 """ MAIN """
 if __name__ == "__main__":
 #    (options, args) = parser.parse_args()
+
+    signal.signal(signal.SIGINT, sigintHandler)
 
     from minemap import Map
     from mapload import MapLoader
@@ -30,7 +37,7 @@ if __name__ == "__main__":
     
     if (m != None):
         from foobot import Robot
-        bot = Robot(m)
-        bot.solve()
-        print bot.cmds
+        BOT = Robot(m)
+        BOT.solve()
+        print BOT.getCommands()
 
