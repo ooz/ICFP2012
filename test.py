@@ -31,4 +31,7 @@ if __name__ == "__main__":
     
     if (m != None):
         m.printAll()
-        print "Test:" +  m.get(4,4)
+
+        from foobot import Robot
+        bot = Robot(m)
+        bot.solveVisual()

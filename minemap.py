@@ -1,15 +1,16 @@
 class Map:
     def __init__(self, lines, metadata = None):
-        self.initialLines = lines
-        self.lines        = lines
+        self.initialGrid = map(lambda l: bytearray(b"" + l), lines)
+        self.grid        = self.initialGrid
 
         self.m = len(lines)
         if (self.m > 0):
             self.n = len(lines[0])
 
-        self.__lambdas = 0
+        self.__lambdas = []
         self.__found   = 0
         self.__robot   = None
+        self.cmds = ""
 
         if (metadata != None and len(metadata) == 3):
             self.water = metadata[0]
@@ -20,7 +21,8 @@ class Map:
             self.flood = 0
             self.proof = 10
 
-#        if not self.isValid():
+        if not self.isValid():
+            pass
 #            raise Exception("Invalid map!")
 
     """ Map status """
@@ -30,17 +32,17 @@ class Map:
         robots = 0
         for y in range(0, self.m):
             for x in range(0, self.n):
-                c = self.lines[y][x]
-                if c == 'R':
+                c = self.grid[y][x]
+                if c == 82:   # 'R'
                     if robots == 0:
-                        self.__robot = (x, y)
+                        self.__robot = [x, y]
                     robots += 1
-                elif c == 'L':
+                elif c == 76: # 'L'
                     lifts += 1
-                elif c == 'O':
+                elif c == 79: # 'O'
                     lifts += 2
-                elif c == '\\':
-                    self.__lambdas += 1
+                elif c == 92: # '\\'
+                    self.__lambdas.append((x, y))
         return (robots == 1 and lifts == 1)
 
     def isAborted(self):
@@ -64,19 +66,29 @@ class Map:
     def getRobot(self):
         return self.__robot
 
-    def getTotalLambdas(self):
+    def getLambdaPositions(self):
         return self.__lambdas
-    def getFoundLambdas(self):
+    def getTotalLambdaCount(self):
+        return len(self.__lambdas)
+    def getFoundLambdaCount(self):
         return self.__found
 
     def get(self, x, y):
         if (x >= 0 and y >= 0 and x < self.n and y < self.m):
-            return self.lines[y][x]
+            return self.grid[y][x]
+        return None
+    def getChar(self, x, y):
+        if (x >= 0 and y >= 0 and x < self.n and y < self.m):
+            return chr(self.grid[y][x])
         return None
 
-    def set(self, x, y, c):
+    def set(self, x, y, b):
         if (x >= 0 and y >= 0 and x < self.n and y < self.m):
-            self.lines[y][x] = c
+            self.grid[y][x] = b
+        return self
+    def setChar(self, x, y, c):
+        if (x >= 0 and y >= 0 and x < self.n and y < self.m):
+            self.grid[y][x] = ord(c)
         return self
 
     """ Update """
@@ -85,11 +97,11 @@ class Map:
 
     """ Printing """
     def printInitial(self):
-        for l in reversed(self.initialLines):
+        for l in reversed(self.initialGrid):
             print l
         return self
     def printCurrent(self):
-        for l in reversed(self.lines):
+        for l in reversed(self.grid):
             print l
         return self
     def printFlooding(self):
@@ -123,10 +135,11 @@ class Map:
         x = self.__robot[0]
         y = self.__robot[1]
         c = self.get(x, y - 1)
-        if (c in [' ', '.', '\\', "O"]):
-            self.set(x, y, ' ')
-            self.set(x, y - 1, 'R')
-            if (c == '\\'):
+        if (c in [32, 46, 92, 79]): # ' ', '.', '\\', "O"
+            self.set(x, y, 32)      # ' '
+            self.set(x, y - 1, 82)  # 'R'
+            self.__robot[1] = y - 1
+            if (c == 92):
                 self.__found += 1
             self.cmds += "D"
         else:

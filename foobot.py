@@ -1,3 +1,5 @@
+import time
+
 from minemap import Map
 
 class Robot:
@@ -12,22 +14,22 @@ class Robot:
         return self.mmap.cmds
 
     def moveLeft(self):
-        mmap.moveLeft()
+        self.mmap.moveLeft()
         return self
     def moveRight(self):
-        mmap.moveRight()
+        self.mmap.moveRight()
         return self
     def moveUp(self):
-        mmap.moveUp()
+        self.mmap.moveUp()
         return self
     def moveDown(self):
-        mmap.moveDown()
+        self.mmap.moveDown()
         return self
     def wait(self):
-        mmap.wait()
+        self.mmap.wait()
         return self
     def abort(self):
-        mmap.abort()
+        self.mmap.abort()
         return self
 
     def execute(self, cmds):
@@ -49,9 +51,22 @@ class Robot:
     def solve(self):
         return self
 
-    def solve(self, tvmode)
-        if (tvmode):
-            return self.solve()
-        pass
-        
+    def solve(self):
+        return self
+
+    """ Visual methods, separated to save one condition check :P """
+    def executeVisual(self, cmds, sleepSecs = 0.0, printEmptyLine = False):
+        for c in cmds:
+            self.execute(c)
+            time.sleep(sleepSecs)
+            if printEmptyLine:
+                print ""
+            self.mmap.printCurrent()
+        return self
+
+    def solveVisual(self):
+        self.mmap.printCurrent() 
+        while (not self.mmap.isTerminated()):
+            self.executeVisual("D", 1.0, True)
+        return self
 
