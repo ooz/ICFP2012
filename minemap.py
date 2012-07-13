@@ -3,15 +3,12 @@ class Map:
         self.initialLines = lines
         self.lines        = lines
 
-        self.n = len(lines)
-        if (self.n > 0):
-            self.m = len(lines[0])
+        self.m = len(lines)
+        if (self.m > 0):
+            self.n = len(lines[0])
 
         # TODO: count lambdas on map
         self.__lambdas = 0
-        self.__foundLambdas = 0
-
-        self.history = ""
         
 
     def isAborted(self):
