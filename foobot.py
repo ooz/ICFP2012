@@ -3,31 +3,31 @@ from minemap import Map
 class Robot:
     def __init__(self, minemap):
         self.mmap    = minemap
-        self.cmds    = ""
         self.lambdas = 0
 
-    def getStepCount(self):
-        return len(self.cmds)
     def getLambdaCount(self):
         return len(self.lambdas)
 
+    def getCommands(self):
+        return self.mmap.cmds
+
     def moveLeft(self):
-        self.cmds += "L"
+        mmap.moveLeft()
         return self
     def moveRight(self):
-        self.cmds += "R"
+        mmap.moveRight()
         return self
     def moveUp(self):
-        self.cmds += "U"
+        mmap.moveUp()
         return self
     def moveDown(self):
-        self.cmds += "D"
+        mmap.moveDown()
         return self
     def wait(self):
-        self.cmds += "W"
+        mmap.wait()
         return self
     def abort(self):
-        self.cmds += "A"
+        mmap.abort()
         return self
 
     def execute(self, cmds):
