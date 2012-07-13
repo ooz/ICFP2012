@@ -7,10 +7,8 @@ class Map:
         if (self.m > 0):
             self.n = len(lines[0])
 
-        # TODO: count lambdas on map
         self.__lambdas = 0
-        # TODO: find robot on map
-        self.__robot = (0, 0)
+        self.__robot   = None
 
         if (metadata != None and len(metadata) == 3):
             self.water = metadata[0]
@@ -21,18 +19,27 @@ class Map:
             self.flood = 0
             self.proof = 10
 
+#        if not self.isValid():
+#            raise Exception("Invalid map!")
+
     """ Map status """
     def isValid(self):
+        """ Validation also locates the robot and counts all lambdas """
         lifts  = 0
         robots = 0
-        for l in lines:
-            for c in l:
+        for y in range(0, self.m):
+            for x in range(0, self.n):
+                c = self.lines[y][x]
                 if c == 'R':
+                    if robots == 0:
+                        self.__robot = (x, y)
                     robots += 1
                 elif c == 'L':
                     lifts += 1
                 elif c == 'O':
                     lifts += 2
+                elif c == '\\':
+                    self.__lambdas += 1
         return (robots == 1 and lifts == 1)
 
     def isAborted(self):
