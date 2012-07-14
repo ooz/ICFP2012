@@ -5,8 +5,9 @@ SCORE_STEP_COST    = 1
 
 class Map:
     def __init__(self, lines, metadata = None):
-        self.initialGrid = map(lambda l: bytearray(b"" + l), lines)
-        self.grid        = self.initialGrid
+        self.initialGrid  = map(lambda l: bytearray(b"" + l), lines)
+        self.grid         = self.initialGrid
+        self.__updateGrid = self.initialGrid
 
         self.m = len(lines)
         if (self.m > 0):
@@ -100,6 +101,10 @@ class Map:
     def getFoundLambdaCount(self):
         return self.__found
 
+    def __updateGet(self, x, y):
+        if (x >= 0 and y >= 0 and x < self.n and y < self.m):
+            return self.__updateGrid[y][x]
+        return None
     def get(self, x, y):
         if (x >= 0 and y >= 0 and x < self.n and y < self.m):
             return self.grid[y][x]
@@ -120,29 +125,43 @@ class Map:
 
     """ Update """
     def update(self):
-        return self
+        self.__updateGrid = self.grid
 
-    """ Printing """
-    def printInitial(self):
-        for l in reversed(self.initialGrid):
-            print l
-        return self
-    def printCurrent(self):
-        for l in reversed(self.grid):
-            print l
-        return self
-    def printFlooding(self):
-        print "Water " + str(self.water)
-        print "Flooding " + str(self.flood)
-        print "Waterproof " + str(self.proof)
+        for y in range(0, self.m):
+            for x in range(0, self.n):
+                c = self.__updateGet(x, y)
+                if (c == 42):                  # '*'
+                    cc = self.__updateGet(x, y - 1)
+                    if (cc == 32):             # ' '
+                        """ Falling rock """
+                        self.set(x, y, 32)     # ' '
+                        self.set(x, y - 1, 42) # '*'
+                    elif (cc == 42):           # '*'
+                        cc  = self.__updateGet(x + 1, y)
+                        ccc = self.__updateGet(x + 1, y - 1)
+                        if (cc == 32 and ccc == 32):
+                            """ Right sliding rock """
+                            self.set(x    , y    , 32) # ' '
+                            self.set(x + 1, y - 1, 42) # '*'
+                        else:
+                            cc  = self.__updateGet(x - 1, y)
+                            ccc = self.__updateGet(x - 1, y - 1)
+                            if (cc == 32 and ccc == 32):
+                                """ Left sliding rock """
+                                self.set(x    , y    , 32) # ' '
+                                self.set(x - 1, y - 1, 42) # '*'
 
-    def printAll(self):
-        print "Init:"
-        self.printInitial()
-        print "\nNow:"
-        self.printCurrent()
-        print ""
-        self.printFlooding()
+                    elif (cc == 92):           # '\\'
+                        """ Rock sliding off lambda """
+                        cc  = self.__updateGet(x + 1, y)
+                        ccc = self.__updateGet(x + 1, y - 1)
+                        if (cc == 32 and ccc == 32):
+                            """ Right sliding rock """
+                            self.set(x    , y    , 32) # ' '
+                            self.set(x + 1, y - 1, 42) # '*'
+                elif (c == 76):            # 'L'
+                    if (self.__found == len(self.__lambdas)):
+                        self.set(x, y, 79) # 'O'
         return self
 
     """ Robot movement """
@@ -237,5 +256,29 @@ class Map:
 
     def abort(self):
         self.cmds += "A"
+        return self
+
+
+    """ Printing """
+    def printInitial(self):
+        for l in reversed(self.initialGrid):
+            print l
+        return self
+    def printCurrent(self):
+        for l in reversed(self.grid):
+            print l
+        return self
+    def printFlooding(self):
+        print "Water " + str(self.water)
+        print "Flooding " + str(self.flood)
+        print "Waterproof " + str(self.proof)
+
+    def printAll(self):
+        print "Init:"
+        self.printInitial()
+        print "\nNow:"
+        self.printCurrent()
+        print ""
+        self.printFlooding()
         return self
 
