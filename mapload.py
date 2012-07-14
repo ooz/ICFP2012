@@ -34,7 +34,7 @@ class MapLoader:
 
     def mapFromStdin(self):
         lines = sys.stdin.readlines()
-        strippedLines = map(lambda l: l.strip(), lines)
+        strippedLines = map(lambda l: l.rstrip(), lines)
         lines = []
         metalines = []
         endOfMapData = False
@@ -55,7 +55,7 @@ class MapLoader:
         metalines = []
         endOfMapData = False
         for line in f:
-            stripped = line.strip()
+            stripped = line.rstrip()
             if (stripped == ""):
                 endOfMapData = True
             else:
