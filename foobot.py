@@ -5,10 +5,9 @@ from minemap import Map
 class Robot:
     def __init__(self, minemap):
         self.mmap    = minemap
-        self.lambdas = 0
 
-    def getLambdaCount(self):
-        return len(self.lambdas)
+    def getMap(self):
+        return self.mmap
 
     def getCommands(self):
         return self.mmap.cmds
@@ -32,30 +31,9 @@ class Robot:
         self.mmap.abort()
         return self
 
-    def execute(self, cmds):
-        for c in cmds:
-            if c == "L":
-                self.moveLeft()
-            elif c == "R":
-                self.moveRight()
-            elif c == "U":
-                self.moveUp()
-            elif c == "D":
-                self.moveDown()
-            elif c == "W":
-                self.wait()
-            elif c == "A":
-                self.abort()
-        return self
-
-    def solve(self):
-        return self
-
-    def solve(self):
-        return self
-
     """ Visual methods, separated to save one condition check :P """
-    def executeVisual(self, cmds, sleepSecs = 0.0, printEmptyLine = False, printScore = False):
+    def executeVisual(self, cmds, sleepSecs = 0.0, 
+                      printEmptyLine = False, printScore = False):
         for c in cmds:
             if (not self.mmap.isTerminated()):
                 self.execute(c)
@@ -71,4 +49,27 @@ class Robot:
         self.mmap.printCurrent() 
         self.executeVisual("LDRDDUULLLDDL", 1.0, True, True)
         return self
+
+    """ Normal execute and solve """
+    def execute(self, cmds):
+        for c in cmds:
+            if (not self.mmap.isTerminated()):
+                if c == "L":
+                    self.moveLeft()
+                elif c == "R":
+                    self.moveRight()
+                elif c == "U":
+                    self.moveUp()
+                elif c == "D":
+                    self.moveDown()
+                elif c == "W":
+                    self.wait()
+                elif c == "A":
+                    self.abort()
+        return self
+
+    """ To override """
+    def solve(self):
+        return self
+
 
