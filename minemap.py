@@ -210,7 +210,7 @@ class Map:
                             self.set(x + 1, y - 1, 42) # '*'
                             self.checkForRockKill(x + 1, y - 1)
                 elif (c == 76):            # 'L'
-                    if (self.__found == len(self.__lambdas)):
+                    if (0 == len(self.__lambdas)):
                         self.set(x, y, 79) # 'O'
         self.checkForWin()
         return self
