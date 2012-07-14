@@ -128,7 +128,7 @@ class Map:
         return None
 
     """ Checks whether object (code) is in direct reach of the robot """
-    def isInReach(self, c):
+    def inReach(self, c):
         x = self.__robot[0]
         y = self.__robot[1]
         reach = []
