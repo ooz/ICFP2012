@@ -71,6 +71,9 @@ class Map:
     def isAborted(self):
         return self.cmds.endswith("A")
 
+    def isLiftOpen(self):
+        return len(self.__lambdas) == 0
+
     def isCompleted(self):
         return self.__win
     
@@ -93,6 +96,10 @@ class Map:
 
     def getCommands(self):
         return self.cmds
+    def getLeftCommands(self):
+        return self.maxCmdCount - len(self.cmds)
+    def getCommandCount(self):
+        return len(self.cmds)
     def getMaxCommandCount(self):
         return self.maxCmdCount
 
