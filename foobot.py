@@ -57,18 +57,18 @@ class Robot:
     """ Visual methods, separated to save one condition check :P """
     def executeVisual(self, cmds, sleepSecs = 0.0, printEmptyLine = False, printScore = False):
         for c in cmds:
-            self.execute(c)
-            time.sleep(sleepSecs)
-            if printEmptyLine:
-                print ""
-            self.mmap.printCurrent()
-            if printScore:
-                print "Score " + str(self.mmap.getScore())
+            if (not self.mmap.isTerminated()):
+                self.execute(c)
+                time.sleep(sleepSecs)
+                if printEmptyLine:
+                    print ""
+                self.mmap.printCurrent()
+                if printScore:
+                    print "Score " + str(self.mmap.getScore())
         return self
 
     def solveVisual(self):
         self.mmap.printCurrent() 
-        while (not self.mmap.isTerminated()):
-            self.executeVisual("D", 0.5, True, True)
+        self.executeVisual("LDRDDUULLLDDL", 1.0, True, True)
         return self
 
