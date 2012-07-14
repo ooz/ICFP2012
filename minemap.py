@@ -84,7 +84,7 @@ class Map:
     def hasCommandsLeft(self):
         return len(self.cmds) < self.maxCmdCount
 
-    """ Getters and setters """
+    """ # Getters and setters """
     def getSize(self):
         return (self.n, self.m)
 
@@ -101,13 +101,11 @@ class Map:
             lambdaScore += self.__found * SCORE_ABORT_BONUS
         return lambdaScore - len(self.cmds.replace("A", ""))
 
-    """ Robot stuff """
+    """ ## Robot stuff """
     def getRobot(self):
         return self.__robot
 
-    def inReach(self, 
-
-    def getLambdaPositions(self):
+    def getLambdas(self):
         return self.__lambdas
     def getTotalLambdaCount(self):
         return len(self.__lambdas)
@@ -141,6 +139,10 @@ class Map:
         elif self.get(x, y - 1) == c:
             reach.append("D")
         return reach
+
+    def isStoppingRock(self, x, y):
+        """                      ' '                          '*'  """
+        return (self.get(x, y) == 32 and self.get(x, y + 1) == 42)
 
     def set(self, x, y, b):
         if (x >= 0 and y >= 0 and x < self.n and y < self.m):
@@ -218,7 +220,7 @@ class Map:
             self.set(x - 1, y, 82)  # 'R'
             self.__robot[0] = x - 1
             if (c == 92):
-                self.__found += 1
+                self.__collectLambda(x - 1, y)
             elif (c == 79):
                 self.__win = True
             self.cmds += "L"
@@ -246,7 +248,7 @@ class Map:
             self.set(x + 1, y, 82)  # 'R'
             self.__robot[0] = x + 1
             if (c == 92):
-                self.__found += 1
+                self.__collectLambda(x + 1, y)
             elif (c == 79):
                 self.__win = True
             self.cmds += "R"
@@ -274,7 +276,7 @@ class Map:
             self.set(x, y + 1, 82)  # 'R'
             self.__robot[1] = y + 1
             if (c == 92):
-                self.__found += 1
+                self.__collectLambda(x, y + 1)
             elif (c == 79):
                 self.__win = True
             self.cmds += "U"
@@ -292,7 +294,7 @@ class Map:
             self.set(x, y - 1, 82)  # 'R'
             self.__robot[1] = y - 1
             if (c == 92):
-                self.__found += 1
+                self.__collectLambda(x, y - 1)
             elif (c == 79):
                 self.__win = True
             self.cmds += "D"
@@ -309,6 +311,11 @@ class Map:
     def abort(self):
         self.cmds += "A"
         return self
+
+    def __collectLambda(self, x, y):
+        self.__found += 1
+        if (x, y) in self.__lambdas:
+            self.__lambdas.remove((x, y))
 
 
     """ Printing """
