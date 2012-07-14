@@ -34,12 +34,13 @@ if __name__ == "__main__":
 
     ml = MapLoader()
     m  = ml.mapFromFile("maps/contest1.map")
+    m  = ml.mapFromFile("maps/astartest.map")
 
     if (m != None):
         m.printAll()
 
-        from foobot import Robot
-        BOT = Robot(m)
+        from foobot import *
+        BOT = MrScaredGreedy(m)
         BOT.solveVisual()
         print BOT.getCommands()
 
