@@ -17,11 +17,10 @@ class Cell(object):
         self.f = 0
 
     def reachable(self):
-        """                   ' ' '\\''O' 'R' """
-        return (self.code in [32, 92, 79, 82])
-# with '.' (earth)
-#        """                   ' ' '.' '\\''O' 'R' """
-#        return (self.code in [32, 46, 92, 79, 82])
+        #        """                   ' ' '\\''O' 'R' """
+        #        return (self.code in [32, 92, 79, 82])
+        """                   ' ' '.' '\\''O' 'R' """
+        return (self.code in [32, 46, 92, 79, 82])
 
     def moveFromParent(self):
         """ What move to do from parent to get to self """

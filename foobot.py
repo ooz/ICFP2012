@@ -133,7 +133,8 @@ class MrScaredGreedy(Robot):
             aStar = AStar(self.mmap.copy(), tar)
             path = aStar.process().path()
             if (not self.wouldGetKilledFor(path) and 
-                self.mmap.getLeftCommands() > len(path)):
+                self.mmap.getLeftCommands() > len(path) and
+                len(path) > 0):
                 self.executeVisual(path, 0.5, True, True)
             else:
                 skip += 1 
