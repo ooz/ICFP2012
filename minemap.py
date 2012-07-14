@@ -29,7 +29,8 @@ class Map:
             self.proof = 10
         self.drown = self.proof
 
-        self.win = False
+        self.__win  = False
+        self.__dead = False
 
         if not self.isValid():
             pass
@@ -59,16 +60,16 @@ class Map:
         return self.cmds.endswith("A")
 
     def isCompleted(self):
-        return self.win
+        return self.__win
     
     def isDead(self):
         """ Either hit by a rock or drowned"""
-        pass
+        return self.__dead
 
     def isTerminated(self):
         return (self.isAborted() 
-                or self.isCompleted() 
-                or self.isDead() 
+                or self.__win 
+                or self.__dead
                     or (not self.hasCommandsLeft()))
 
     def hasCommandsLeft(self):
@@ -85,7 +86,7 @@ class Map:
 
     def getScore(self):
         lambdaScore = self.__found * SCORE_LAMBDA_FOUND
-        if (self.win):
+        if (self.__win):
             lambdaScore += self.__found * SCORE_WIN_BONUS
         elif (self.isAborted()):
             lambdaScore += self.__found * SCORE_ABORT_BONUS
@@ -124,6 +125,12 @@ class Map:
         return self
 
     """ Update """
+    def checkForRockKill(self, rockX, rockY):
+        x = self.__robot[0]
+        y = self.__robot[1]
+        if (x == rockX and y + 1 == rockY):
+            self.__dead = True
+
     def update(self):
         self.__updateGrid = self.grid
 
@@ -136,6 +143,7 @@ class Map:
                         """ Falling rock """
                         self.set(x, y, 32)     # ' '
                         self.set(x, y - 1, 42) # '*'
+                        self.checkForRockKill(x, y - 1)
                     elif (cc == 42):           # '*'
                         cc  = self.__updateGet(x + 1, y)
                         ccc = self.__updateGet(x + 1, y - 1)
@@ -143,6 +151,7 @@ class Map:
                             """ Right sliding rock """
                             self.set(x    , y    , 32) # ' '
                             self.set(x + 1, y - 1, 42) # '*'
+                            self.checkForRockKill(x + 1, y - 1)
                         else:
                             cc  = self.__updateGet(x - 1, y)
                             ccc = self.__updateGet(x - 1, y - 1)
@@ -150,6 +159,7 @@ class Map:
                                 """ Left sliding rock """
                                 self.set(x    , y    , 32) # ' '
                                 self.set(x - 1, y - 1, 42) # '*'
+                                self.checkForRockKill(x - 1, y - 1)
 
                     elif (cc == 92):           # '\\'
                         """ Rock sliding off lambda """
@@ -159,6 +169,7 @@ class Map:
                             """ Right sliding rock """
                             self.set(x    , y    , 32) # ' '
                             self.set(x + 1, y - 1, 42) # '*'
+                            self.checkForRockKill(x + 1, y - 1)
                 elif (c == 76):            # 'L'
                     if (self.__found == len(self.__lambdas)):
                         self.set(x, y, 79) # 'O'
