@@ -4,19 +4,19 @@ SCORE_WIN_BONUS    = 50
 SCORE_STEP_COST    = 1
 
 class Map:
-    def __init__(self, lines, metadata = None):
-        self.initialGrid  = map(lambda l: bytearray(b"" + l), lines)
-        self.grid         = map(lambda l: bytearray(b"" + l), lines)
+    def __init__(self, lines, metadata = None, cmds = "", found = 0, win = False, dead = False):
+        self.initialGrid  = map(lambda l: bytearray(b"" + str(l)), lines)
+        self.grid         = map(lambda l: bytearray(b"" + str(l)), lines)
         self.__updateGrid = None
 
         self.m = len(lines)
         if (self.m > 0):
             self.n = len(lines[0])
 
-        self.__lambdas = []
-        self.__found   = 0
         self.__robot   = None
-        self.cmds = ""
+        self.__lambdas = []
+        self.__found   = found
+        self.cmds = cmds
         self.maxCmdCount = self.n * self.m
 
         if (metadata != None and len(metadata) == 3):
@@ -29,12 +29,21 @@ class Map:
             self.proof = 10
         self.drown = self.proof
 
-        self.__win  = False
-        self.__dead = False
+        self.__win  = win
+        self.__dead = dead
 
         if not self.isValid():
             pass
 #            raise Exception("Invalid map!")
+
+    """ Copy """
+    def copy(self):
+        return Map(self.grid, 
+                   [self.water, self.flood, self.proof], 
+                   self.cmds, self.__found, self.__win, self.__dead)
+    def copyInitial(self):
+        return Map(self.initialGrid, 
+                   [self.water, self.flood, self.proof])
 
     """ Map status """
     def isValid(self):
@@ -90,7 +99,7 @@ class Map:
             lambdaScore += self.__found * SCORE_WIN_BONUS
         elif (self.isAborted()):
             lambdaScore += self.__found * SCORE_ABORT_BONUS
-        return lambdaScore - len(self.cmds.replace("A", "")
+        return lambdaScore - len(self.cmds.replace("A", ""))
 
     def getRobot(self):
         return self.__robot

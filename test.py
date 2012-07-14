@@ -42,3 +42,7 @@ if __name__ == "__main__":
         BOT = Robot(m)
         BOT.solveVisual()
         print BOT.getCommands()
+
+# Copy test:
+#        mcopy = m.copyInitial()
+#        mcopy.printAll()
