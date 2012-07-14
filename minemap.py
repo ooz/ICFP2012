@@ -6,8 +6,8 @@ SCORE_STEP_COST    = 1
 class Map:
     def __init__(self, lines, metadata = None):
         self.initialGrid  = map(lambda l: bytearray(b"" + l), lines)
-        self.grid         = self.initialGrid
-        self.__updateGrid = self.initialGrid
+        self.grid         = map(lambda l: bytearray(b"" + l), lines)
+        self.__updateGrid = None
 
         self.m = len(lines)
         if (self.m > 0):
@@ -132,7 +132,7 @@ class Map:
             self.__dead = True
 
     def update(self):
-        self.__updateGrid = self.grid
+        self.__updateGrid = map(lambda l: bytearray(l), self.grid)
 
         for y in range(0, self.m):
             for x in range(0, self.n):
