@@ -131,6 +131,11 @@ class Map:
         if (x == rockX and y + 1 == rockY):
             self.__dead = True
 
+    def checkForWin(self):
+        if (self.__win):
+            self.__dead = False
+        return self
+
     def update(self):
         self.__updateGrid = map(lambda l: bytearray(l), self.grid)
 
@@ -173,6 +178,7 @@ class Map:
                 elif (c == 76):            # 'L'
                     if (self.__found == len(self.__lambdas)):
                         self.set(x, y, 79) # 'O'
+        self.checkForWin()
         return self
 
     """ Robot movement """
@@ -186,6 +192,8 @@ class Map:
             self.__robot[0] = x - 1
             if (c == 92):
                 self.__found += 1
+            elif (c == 79):
+                self.__win = True
             self.cmds += "L"
         elif (c == 42):             # '*'
             cc = self.get(x - 2, y)
@@ -212,6 +220,8 @@ class Map:
             self.__robot[0] = x + 1
             if (c == 92):
                 self.__found += 1
+            elif (c == 79):
+                self.__win = True
             self.cmds += "R"
         elif (c == 42):             # '*'
             cc = self.get(x + 2, y)
@@ -238,6 +248,8 @@ class Map:
             self.__robot[1] = y + 1
             if (c == 92):
                 self.__found += 1
+            elif (c == 79):
+                self.__win = True
             self.cmds += "U"
         else:
             self.cmds += "W"
@@ -254,6 +266,8 @@ class Map:
             self.__robot[1] = y - 1
             if (c == 92):
                 self.__found += 1
+            elif (c == 79):
+                self.__win = True
             self.cmds += "D"
         else:
             self.cmds += "W"
