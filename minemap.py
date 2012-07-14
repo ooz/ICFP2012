@@ -101,8 +101,11 @@ class Map:
             lambdaScore += self.__found * SCORE_ABORT_BONUS
         return lambdaScore - len(self.cmds.replace("A", ""))
 
+    """ Robot stuff """
     def getRobot(self):
         return self.__robot
+
+    def inReach(self, 
 
     def getLambdaPositions(self):
         return self.__lambdas
@@ -123,6 +126,21 @@ class Map:
         if (x >= 0 and y >= 0 and x < self.n and y < self.m):
             return chr(self.grid[y][x])
         return None
+
+    """ Checks whether object (code) is in direct reach of the robot """
+    def isInReach(self, c):
+        x = self.__robot[0]
+        y = self.__robot[1]
+        reach = []
+        if self.get(x + 1, y) == c:
+            reach.append("R")
+        elif self.get(x - 1, y) == c:
+            reach.append("L")
+        elif self.get(x, y + 1) == c:
+            reach.append("U")
+        elif self.get(x, y - 1) == c:
+            reach.append("D")
+        return reach
 
     def set(self, x, y, b):
         if (x >= 0 and y >= 0 and x < self.n and y < self.m):
