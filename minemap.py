@@ -14,6 +14,7 @@ class Map:
             self.n = len(lines[0])
 
         self.__robot   = None
+        self.__lift    = None
         self.__lambdas = []
         self.__found   = found
         self.cmds = cmds
@@ -58,8 +59,10 @@ class Map:
                         self.__robot = [x, y]
                     robots += 1
                 elif c == 76: # 'L'
+                    self.__lift = (x, y)
                     lifts += 1
                 elif c == 79: # 'O'
+                    self.__lift = (x, y)
                     lifts += 2
                 elif c == 92: # '\\'
                     self.__lambdas.append((x, y))
@@ -104,6 +107,8 @@ class Map:
     """ ## Robot stuff """
     def getRobot(self):
         return self.__robot
+    def getLift(self):
+        return self.__lift
 
     def getLambdas(self):
         return self.__lambdas
