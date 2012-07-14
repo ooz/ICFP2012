@@ -90,7 +90,7 @@ class Map:
             lambdaScore += self.__found * SCORE_WIN_BONUS
         elif (self.isAborted()):
             lambdaScore += self.__found * SCORE_ABORT_BONUS
-        return lambdaScore - len(self.cmds)
+        return lambdaScore - len(self.cmds.replace("A", "")
 
     def getRobot(self):
         return self.__robot
