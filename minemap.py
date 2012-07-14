@@ -147,17 +147,73 @@ class Map:
 
     """ Robot movement """
     def moveLeft(self):
-        self.cmds += "L"
+        x = self.__robot[0]
+        y = self.__robot[1]
+        c = self.get(x - 1, y)
+        if (c in [32, 46, 92, 79]): # ' ', '.', '\\', "O"
+            self.set(x, y, 32)      # ' '
+            self.set(x - 1, y, 82)  # 'R'
+            self.__robot[0] = x - 1
+            if (c == 92):
+                self.__found += 1
+            self.cmds += "L"
+        elif (c == 42):             # '*'
+            cc = self.get(x - 2, y)
+            if (cc == 32):          # ' '
+                self.set(x, y, 32)      # ' '
+                self.set(x - 1, y, 82)  # 'R'
+                self.__robot[0] = x - 1
+                self.set(x - 2, y, 42)  # '*'
+                self.cmds += "L"
+            else:
+                self.cmds += "W"
+        else:
+            self.cmds += "W"
         self.update()
         return self
+
     def moveRight(self):
-        self.cmds += "R"
+        x = self.__robot[0]
+        y = self.__robot[1]
+        c = self.get(x + 1, y)
+        if (c in [32, 46, 92, 79]): # ' ', '.', '\\', "O"
+            self.set(x, y, 32)      # ' '
+            self.set(x + 1, y, 82)  # 'R'
+            self.__robot[0] = x + 1
+            if (c == 92):
+                self.__found += 1
+            self.cmds += "R"
+        elif (c == 42):             # '*'
+            cc = self.get(x + 2, y)
+            if (cc == 32):          # ' '
+                self.set(x, y, 32)      # ' '
+                self.set(x + 1, y, 82)  # 'R'
+                self.__robot[0] = x + 1
+                self.set(x + 2, y, 42)  # '*'
+                self.cmds += "R"
+            else:
+                self.cmds += "W"
+        else:
+            self.cmds += "W"
         self.update()
         return self
+
     def moveUp(self):
-        self.cmds += "U"
+        x = self.__robot[0]
+        y = self.__robot[1]
+        c = self.get(x, y + 1)
+        if (c in [32, 46, 92, 79]): # ' ', '.', '\\', "O"
+            self.set(x, y, 32)      # ' '
+            self.set(x, y + 1, 82)  # 'R'
+            self.__robot[1] = y + 1
+            if (c == 92):
+                self.__found += 1
+            self.cmds += "U"
+        else:
+            self.cmds += "W"
         self.update()
         return self
+
     def moveDown(self):
         x = self.__robot[0]
         y = self.__robot[1]
@@ -173,10 +229,12 @@ class Map:
             self.cmds += "W"
         self.update()
         return self
+
     def wait(self):
         self.cmds += "W"
         self.update()
         return self
+
     def abort(self):
         self.cmds += "A"
         return self
