@@ -48,7 +48,7 @@ class Robot:
             return ""
         reachable = self.mmap.inReach(92) # '\\'
         for move in reachable:
-            if (not wouldGetKilledFor(move)):
+            if (not self.wouldGetKilledFor(move)):
                 return move
         return ""
 
@@ -56,21 +56,19 @@ class Robot:
 
     """ Visual methods, separated to save one condition check :P """
     def executeVisual(self, cmds, sleepSecs = 0.0, 
-                      printEmptyLine = False, printScore = False):
+                      printMap = False, printScore = False):
         for c in cmds:
             if (not self.mmap.isTerminated()):
                 self.execute(c)
                 time.sleep(sleepSecs)
-                if printEmptyLine:
+                if printMap:
                     print ""
-                self.mmap.printCurrent()
+                    self.mmap.printCurrent()
                 if printScore:
                     print "Score " + str(self.mmap.getScore())
         return self
 
-    def solveVisual(self):
-        self.mmap.printCurrent() 
-        self.executeVisual("LDRDDUULLLDDL", 1.0, True, True)
+    def solveVisual(self, sleepSecs = 0.0, printMap = False, printScore = False):
         return self
 
     """ Normal execute and solve """
@@ -97,11 +95,14 @@ class Robot:
 
 
 
+# TODO: update score formula!
+#       even non-aborted runs yields full 50 pts per lambda
+#       
 """
 General
 =======
-* Don't get killed
-* Don't block the lift with a rock
+* Don't die
+* Don't block the lift with a rock (
 * Never go for a lambda that needs more than 
   (#lambdas + 1) * 25 + 24 steps to get
  
@@ -115,40 +116,49 @@ from astar import AStar
 
 class MrScaredGreedy(Robot):
     def solve(self):
-        return self
+        return self.solveVisual()
 
-    def solveVisual(self):
+    def solveVisual(self, sleepSecs = 0.0, printEmptyLine = False, printScore = False):
         maxSteps = self.mmap.getMaxCommandCount()
 
-        skip = 0
+        skip = []
+        tar = None
+        path = ""
         while (not self.mmap.isTerminated() and 
                 self.mmap.getLeftCommands() > 1 and 
                 (self.mmap.isLiftOpen() or 
-                    skip < self.mmap.getTotalLambdaCount())):
-            tar = None
+                    len(skip) < self.mmap.getTotalLambdaCount()) and
+                not (tar == self.mmap.getLift() and path == "")):
             if self.mmap.isLiftOpen():
                 tar = self.mmap.getLift()
+                aStar = AStar(self.mmap.copy(), tar)
+                path = aStar.process().path()
             else:
-                tar = self.mmap.getLambdas()[skip]
-            aStar = AStar(self.mmap.copy(), tar)
-            path = aStar.process().path()
+                tars = []
+                for l in self.mmap.getLambdas():
+                    aStar = AStar(self.mmap.copy(), l)
+                    path = aStar.process().path()
+                    tars.append((l, path))
+                minmin = reduce(lambda a, b: min(a, b), map(lambda t: len(t[1]), tars))
+                tar, path = filter(lambda t: len(t[1]) == minmin, tars)[0]
+
             if (not self.wouldGetKilledFor(path) and 
                 self.mmap.getLeftCommands() > len(path) and
                 len(path) > 0):
-                self.executeVisual(path, 0.5, True, True)
+                self.executeVisual(path, sleepSecs, printEmptyLine, printScore)
+                skip = []
             else:
-                skip += 1 
+                skip.append(tar)
 
         if (not self.mmap.isTerminated()):
             """ Just """
             last = self.meaningfulLastStep()
             if last != "":
-                self.executeVisual(last, 0.2, True, True)
+                self.executeVisual(last, sleepSecs, printEmptyLine, printScore)
             else:
                 self.abort()
-        print ""
-        self.mmap.printCurrent() 
-        print "Score " + str(self.mmap.getScore())
+        if printScore:
+            print "\nScore " + str(self.mmap.getScore())
         return self
 
 
