@@ -4,7 +4,9 @@ SCORE_WIN_BONUS    = 50
 SCORE_STEP_COST    = 1
 
 class Map:
-    def __init__(self, lines, metadata = None, cmds = "", found = 0, win = False, dead = False):
+
+    """ Constructor """
+    def __init__(self, lines, metadata = [], cmds = "", found = 0, win = False, dead = False):
         self.initialGrid  = map(lambda l: bytearray(b"" + str(l)), lines)
         self.grid         = map(lambda l: bytearray(b"" + str(l)), lines)
         self.__updateGrid = None
@@ -20,14 +22,20 @@ class Map:
         self.cmds = cmds
         self.maxCmdCount = self.n * self.m
 
-        if (metadata != None and len(metadata) == 3):
+        if (len(metadata) == 6):
             self.water = metadata[0]
             self.flood = metadata[1]
             self.proof = metadata[2]
+            self.growth = metadata[3]
+            self.razors = metadata[4]
+            self.trampos = metadata[5]
         else:
             self.water = 0
             self.flood = 0
             self.proof = 10
+            self.growth = 25
+            self.razors = 0
+            self.trampos = []
         self.drown = self.proof
 
         self.__win  = win
