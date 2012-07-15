@@ -7,14 +7,20 @@ __version__ = "0.1.0"
 
 import sys
 import signal
-# from   optparse import OptionParser
-# 
-# usage  = "Usage: %prog [options] file(s)" 
-# parser = OptionParser(usage = usage)
-# 
-# parser.add_option("-v", "--verbose",
-#                   action="store_true", dest="verbose", default=False,
-#                   help="Display the solving process live on stdout (each step is delayed to be easier followed by a human). Last line printed is the command sequence.")
+from   optparse import OptionParser
+
+usage  = "Usage: %prog [options] file(s)" 
+parser = OptionParser(usage = usage)
+
+parser.add_option("-v", "--verbose",
+                  action="store_true", dest="verbose", default=False,
+                  help="""Display the solving process live on stdout 
+                          (each step is delayed to be easier followed by a human). 
+                          Last line printed is the command sequence.
+                          You can alter the sleep duration with the --sleep option.""")
+parser.add_option("-s", "--sleep", type="float", dest="sleep", default=1.0,
+                  help="""Time to sleep after one step was executed.
+                          Only has an effect in combination with the --verbose flag.""")
 
 BOT = None
 def sigintHandler(signal, frame):
@@ -25,7 +31,7 @@ def sigintHandler(signal, frame):
 
 """ MAIN """
 if __name__ == "__main__":
-#    (options, args) = parser.parse_args()
+    (options, args) = parser.parse_args()
 
     signal.signal(signal.SIGINT, sigintHandler)
 
@@ -36,8 +42,11 @@ if __name__ == "__main__":
     m  = ml.mapFromStdin()
     
     if (m != None):
-        from foobot import Robot
-        BOT = Robot(m)
-        BOT.solve()
+        from foobot import *
+        BOT = MrScaredGreedy(m)
+        if (options.verbose):
+            BOT.solveVisual(options.sleep, options.verbose, options.verbose)
+        else:
+            BOT.solve()
         print BOT.getCommands()
 
