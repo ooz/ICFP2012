@@ -1,0 +1,22 @@
+Order number:
+
+    94687134
+
+Lightning entry:
+
+ * Nothing special so far: just testing submission process:
+    - A*, moving to closest lambda first (greedy), avoid dying at all costs
+    - Algorithm ignores any flood information, so drowing is very likely
+
+Plan:
+ 
+ * Always remember a lift connection
+ * Lambda cluster detection (getting greedy on clusters instead of single lambdas)
+    - maybe: find optional "extraction point" for cluster
+ * actively moving rocks, avoid final path blocking
+ * maybe: evolutionary optimization of some parameters
+
+One man army:
+
+    Oliver Zscheyge <oliverzscheyge@gmail.com>
+
