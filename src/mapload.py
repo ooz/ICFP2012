@@ -20,6 +20,9 @@ class MapLoader:
         water = 0
         flood = 0
         proof = 10
+        growth = 25
+        razors = 0
+        trampos = []
         for ml in metalines:
             elems = ml.split(" ")
             if len(elems) >= 2:
@@ -29,8 +32,14 @@ class MapLoader:
                     flood = int(elems[1])
                 elif "Water" in elems:
                     water = int(elems[1])
+                elif "Growth" in elems:
+                    growth = int(elems[1])
+                elif "Razors" in elems:
+                    razors = int(elems[1])
+                elif "Trampoline" in elems:
+                    trampos.append((elems[1], elems[3]))
 
-        return Map(lines, [water, flood, proof])
+        return Map(lines, [water, flood, proof, growth, razors], trampos)
 
     def mapFromStdin(self):
         lines = sys.stdin.readlines()
