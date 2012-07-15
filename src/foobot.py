@@ -12,25 +12,6 @@ class Robot:
     def getCommands(self):
         return self.mmap.cmds
 
-    def moveLeft(self):
-        self.mmap.moveLeft()
-        return self
-    def moveRight(self):
-        self.mmap.moveRight()
-        return self
-    def moveUp(self):
-        self.mmap.moveUp()
-        return self
-    def moveDown(self):
-        self.mmap.moveDown()
-        return self
-    def wait(self):
-        self.mmap.wait()
-        return self
-    def abort(self):
-        self.mmap.abort()
-        return self
-
     def wouldGetKilledFor(self, cmds):
         bot = Robot(self.mmap.copy())
         for c in cmds:
@@ -38,6 +19,8 @@ class Robot:
                 bot.execute(c)
         return bot.mmap.isDead()
 
+# TODO: Redundant, since you dont need to abort in order to get the
+#       "survival" bonus!
     """
     Only one move left? 
     ABORT if at least 1 lambda, 
@@ -75,18 +58,7 @@ class Robot:
     def execute(self, cmds):
         for c in cmds:
             if (not self.mmap.isTerminated()):
-                if c == "L":
-                    self.moveLeft()
-                elif c == "R":
-                    self.moveRight()
-                elif c == "U":
-                    self.moveUp()
-                elif c == "D":
-                    self.moveDown()
-                elif c == "W":
-                    self.wait()
-                elif c == "A":
-                    self.abort()
+                self.mmap.move(c)
         return self
 
     """ To override """

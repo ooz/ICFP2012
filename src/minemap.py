@@ -1,7 +1,4 @@
-SCORE_LAMBDA_FOUND = 25
-SCORE_ABORT_BONUS  = 25
-SCORE_WIN_BONUS    = 50
-SCORE_STEP_COST    = 1
+from constants import *
 
 class Map:
 
@@ -30,12 +27,12 @@ class Map:
             self.razors = metadata[4]
             self.trampos = metadata[5]
         else:
-            self.water = 0
-            self.flood = 0
-            self.proof = 10
-            self.growth = 25
-            self.razors = 0
-            self.trampos = []
+            self.water   = DEFAULT_WATER 
+            self.flood   = DEFAULT_FLOOD 
+            self.proof   = DEFAULT_PROOF 
+            self.growth  = DEFAULT_GROWTH
+            self.razors  = DEFAULT_RAZORS
+            self.trampos = DEFAULT_TRAMPOS
         self.drown = self.proof
 
         self.__win  = win
@@ -62,22 +59,22 @@ class Map:
         for y in range(0, self.m):
             for x in range(0, self.n):
                 c = self.grid[y][x]
-                if c == 82:   # 'R'
+                if c == ORD_ROBOT:
                     if robots == 0:
                         self.__robot = [x, y]
                     robots += 1
-                elif c == 76: # 'L'
+                elif c == ORD_CLOSED_LIFT:
                     self.__lift = (x, y)
                     lifts += 1
-                elif c == 79: # 'O'
+                elif c == ORD_OPEN_LIFT:
                     self.__lift = (x, y)
                     lifts += 2
-                elif c == 92: # '\\'
+                elif c == ORD_LAMBDA:
                     self.__lambdas.append((x, y))
         return (robots == 1 and lifts == 1)
 
     def isAborted(self):
-        return self.cmds.endswith("A")
+        return self.cmds.endswith(CMD_ABORT)
 
     def isLiftOpen(self):
         return len(self.__lambdas) == 0
@@ -117,7 +114,7 @@ class Map:
             lambdaScore += self.__found * SCORE_WIN_BONUS
         elif (not self.isDead()):
             lambdaScore += self.__found * SCORE_ABORT_BONUS
-        return lambdaScore - len(self.cmds.replace("A", ""))
+        return lambdaScore - len(self.cmds.replace(CMD_ABORT, ""))
 
     """ ## Robot stuff """
     def getRobot(self):
@@ -151,18 +148,18 @@ class Map:
         y = self.__robot[1]
         reach = []
         if self.get(x + 1, y) == c:
-            reach.append("R")
+            reach.append(CMD_RIGHT)
         elif self.get(x - 1, y) == c:
-            reach.append("L")
+            reach.append(CMD_LEFT)
         elif self.get(x, y + 1) == c:
-            reach.append("U")
+            reach.append(CMD_UP)
         elif self.get(x, y - 1) == c:
-            reach.append("D")
+            reach.append(CMD_DOWN)
         return reach
 
-    def isStoppingRock(self, x, y):
-        """                      ' '                          '*'  """
-        return (self.get(x, y) == 32 and self.get(x, y + 1) == 42)
+    # FIXME: Method doesnt make sense, therefore made private
+    def __isStoppingRock(self, x, y):
+        return (self.get(x, y) == ORD_EMPTY and self.get(x, y + 1) == ORD_ROCK)
 
     def set(self, x, y, b):
         if (x >= 0 and y >= 0 and x < self.n and y < self.m):
@@ -191,149 +188,106 @@ class Map:
         for y in range(0, self.m):
             for x in range(0, self.n):
                 c = self.__updateGet(x, y)
-                if (c == 42):                  # '*'
+                if (c in [ORD_ROCK, ORD_HOROCK]): 
                     cc = self.__updateGet(x, y - 1)
-                    if (cc == 32):             # ' '
+                    if (cc == ORD_EMPTY):
                         """ Falling rock """
-                        self.set(x, y, 32)     # ' '
-                        self.set(x, y - 1, 42) # '*'
+                        self.set(x, y, ORD_EMPTY)
+                        self.set(x, y - 1, c)
                         self.checkForRockKill(x, y - 1)
-                    elif (cc == 42):           # '*'
+                    elif (cc in [ORD_ROCK, ORD_HOROCK]):
                         cc  = self.__updateGet(x + 1, y)
                         ccc = self.__updateGet(x + 1, y - 1)
-                        if (cc == 32 and ccc == 32):
+                        if (cc == ORD_EMPTY and ccc == ORD_EMPTY):
                             """ Right sliding rock """
-                            self.set(x    , y    , 32) # ' '
-                            self.set(x + 1, y - 1, 42) # '*'
+                            self.set(x    , y    , ORD_EMPTY)
+                            self.set(x + 1, y - 1, c)
                             self.checkForRockKill(x + 1, y - 1)
                         else:
                             cc  = self.__updateGet(x - 1, y)
                             ccc = self.__updateGet(x - 1, y - 1)
-                            if (cc == 32 and ccc == 32):
+                            if (cc == ORD_EMPTY and ccc == ORD_EMPTY):
                                 """ Left sliding rock """
-                                self.set(x    , y    , 32) # ' '
-                                self.set(x - 1, y - 1, 42) # '*'
+                                self.set(x    , y    , ORD_EMPTY)
+                                self.set(x - 1, y - 1, c)
                                 self.checkForRockKill(x - 1, y - 1)
 
-                    elif (cc == 92):           # '\\'
+                    elif (cc == ORD_LAMBDA):
                         """ Rock sliding off lambda """
                         cc  = self.__updateGet(x + 1, y)
                         ccc = self.__updateGet(x + 1, y - 1)
-                        if (cc == 32 and ccc == 32):
+                        if (cc == ORD_EMPTY and ccc == ORD_EMPTY):
                             """ Right sliding rock """
-                            self.set(x    , y    , 32) # ' '
-                            self.set(x + 1, y - 1, 42) # '*'
+                            self.set(x    , y    , ORD_EMPTY)
+                            self.set(x + 1, y - 1, c)
                             self.checkForRockKill(x + 1, y - 1)
-                elif (c == 76):            # 'L'
+                elif (c == ORD_CLOSED_LIFT):
                     if (0 == len(self.__lambdas)):
-                        self.set(x, y, 79) # 'O'
+                        self.set(x, y, ORD_OPEN_LIFT)
         self.checkForWin()
         return self
 
     """ Robot movement """
-    def moveLeft(self):
+    def move(self, cmd):
+        moved = False
+        if cmd == CMD_LEFT:
+            moved = self.__moveLR(-1)
+        elif cmd == CMD_RIGHT:
+            moved = self.__moveLR(1)
+        elif cmd == CMD_DOWN:
+            moved = self.__moveDU(-1)
+        elif cmd == CMD_UP:
+            moved = self.__moveDU(1)
+        elif cmd == CMD_ABORT:
+            self.cmds += CMD_ABORT
+            return self
+        if moved:
+            self.cmds += cmd
+        else:
+            self.cmds += CMD_WAIT
+        self.update()
+        return self
+
+    def __moveLR(self, xOffset):
         x = self.__robot[0]
         y = self.__robot[1]
-        c = self.get(x - 1, y)
-        if (c in [32, 46, 92, 79]): # ' ', '.', '\\', "O"
-            self.set(x, y, 32)      # ' '
-            self.set(x - 1, y, 82)  # 'R'
-            self.__robot[0] = x - 1
-            if (c == 92):
-                self.__collectLambda(x - 1, y)
-            elif (c == 79):
+        c = self.get(x + xOffset, y)
+        if (c in [ORD_EMPTY, ORD_EARTH, ORD_LAMBDA, ORD_OPEN_LIFT]):
+            self.set(x, y, ORD_EMPTY)
+            self.set(x + xOffset, y, ORD_ROBOT)
+            self.__robot[0] = x + xOffset
+            if (c == ORD_LAMBDA):
+                self.__collectLambda(x + xOffset, y)
+            elif (c == ORD_OPEN_LIFT):
                 self.__win = True
-            self.cmds += "L"
-        elif (c == 42):             # '*'
-            cc = self.get(x - 2, y)
-            if (cc == 32):          # ' '
-                self.set(x, y, 32)      # ' '
-                self.set(x - 1, y, 82)  # 'R'
-                self.__robot[0] = x - 1
-                self.set(x - 2, y, 42)  # '*'
-                self.cmds += "L"
-            else:
-                self.cmds += "W"
-        else:
-            self.cmds += "W"
-        self.update()
-        return self
+            return True
+        elif (c in [ORD_ROCK, ORD_HOROCK]):
+            cc = self.get(x + (xOffset * 2), y)
+            if (cc == ORD_EMPTY):
+                self.set(x, y, ORD_EMPTY)
+                self.set(x + xOffset, y, ORD_ROBOT)
+                self.__robot[0] = x + xOffset
+                self.set(x + (xOffset * 2), y, c)
+                return True
+        return False
 
-    def moveRight(self):
+    def __moveDU(self, yOffset):
         x = self.__robot[0]
         y = self.__robot[1]
-        c = self.get(x + 1, y)
-        if (c in [32, 46, 92, 79]): # ' ', '.', '\\', "O"
-            self.set(x, y, 32)      # ' '
-            self.set(x + 1, y, 82)  # 'R'
-            self.__robot[0] = x + 1
-            if (c == 92):
-                self.__collectLambda(x + 1, y)
-            elif (c == 79):
+        c = self.get(x, yOffset)
+        if (c in [ORD_EMPTY, ORD_EARTH, ORD_LAMBDA, ORD_OPEN_LIFT]):
+            self.set(x, y, ORD_EMPTY)
+            self.set(x, yOffset, ORD_ROBOT)
+            self.__robot[1] = yOffset
+            if (c == ORD_LAMBDA):
+                self.__collectLambda(x, yOffset)
+            elif (c == ORD_OPEN_LIFT):
                 self.__win = True
-            self.cmds += "R"
-        elif (c == 42):             # '*'
-            cc = self.get(x + 2, y)
-            if (cc == 32):          # ' '
-                self.set(x, y, 32)      # ' '
-                self.set(x + 1, y, 82)  # 'R'
-                self.__robot[0] = x + 1
-                self.set(x + 2, y, 42)  # '*'
-                self.cmds += "R"
-            else:
-                self.cmds += "W"
-        else:
-            self.cmds += "W"
-        self.update()
-        return self
-
-    def moveUp(self):
-        x = self.__robot[0]
-        y = self.__robot[1]
-        c = self.get(x, y + 1)
-        if (c in [32, 46, 92, 79]): # ' ', '.', '\\', "O"
-            self.set(x, y, 32)      # ' '
-            self.set(x, y + 1, 82)  # 'R'
-            self.__robot[1] = y + 1
-            if (c == 92):
-                self.__collectLambda(x, y + 1)
-            elif (c == 79):
-                self.__win = True
-            self.cmds += "U"
-        else:
-            self.cmds += "W"
-        self.update()
-        return self
-
-    def moveDown(self):
-        x = self.__robot[0]
-        y = self.__robot[1]
-        c = self.get(x, y - 1)
-        if (c in [32, 46, 92, 79]): # ' ', '.', '\\', "O"
-            self.set(x, y, 32)      # ' '
-            self.set(x, y - 1, 82)  # 'R'
-            self.__robot[1] = y - 1
-            if (c == 92):
-                self.__collectLambda(x, y - 1)
-            elif (c == 79):
-                self.__win = True
-            self.cmds += "D"
-        else:
-            self.cmds += "W"
-        self.update()
-        return self
-
-    def wait(self):
-        self.cmds += "W"
-        self.update()
-        return self
-
-    def abort(self):
-        self.cmds += "A"
-        return self
+            return True
+        return False
 
     def __collectLambda(self, x, y):
-        self.__found += 1
+        self.__found += LAMBDA_FOUND_INCREMENT
         if (x, y) in self.__lambdas:
             self.__lambdas.remove((x, y))
 
