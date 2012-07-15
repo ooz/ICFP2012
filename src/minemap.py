@@ -115,7 +115,7 @@ class Map:
         lambdaScore = self.__found * SCORE_LAMBDA_FOUND
         if (self.__win):
             lambdaScore += self.__found * SCORE_WIN_BONUS
-        elif (self.isAborted()):
+        elif (not self.isDead()):
             lambdaScore += self.__found * SCORE_ABORT_BONUS
         return lambdaScore - len(self.cmds.replace("A", ""))
 
