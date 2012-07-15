@@ -6,8 +6,10 @@ http://www.laurentluce.com/posts/solving-mazes-using-python-simple-recursivity-a
 
 import heapq
 
+from constants import *
+
 class Cell(object):
-    def __init__(self, x, y, code = 32, parent = None, g = 0, h = 0):
+    def __init__(self, x, y, code = ORD_EMPTY, parent = None, g = 0, h = 0):
         self.x = x
         self.y = y
         self.code = code
@@ -17,23 +19,24 @@ class Cell(object):
         self.f = 0
 
     def reachable(self):
-        #        """                   ' ' '\\''O' 'R' """
-        #        return (self.code in [32, 92, 79, 82])
-        """                   ' ' '.' '\\''O' 'R' """
-        return (self.code in [32, 46, 92, 79, 82])
+        return (self.code in [ORD_EMPTY
+                             , ORD_EARTH
+                             , ORD_LAMBDA
+                             , ORD_OPEN_LIFT
+                             , ORD_ROBOT])
 
     def moveFromParent(self):
         """ What move to do from parent to get to self """
         if self.parent == None:
             return ""
         elif self.parent.x == self.x + 1:
-            return "L"
+            return CMD_LEFT
         elif self.parent.x == self.x - 1:
-            return "R"
+            return CMD_RIGHT
         elif self.parent.y == self.y + 1:
-            return "D"
+            return CMD_DOWN
         elif self.parent.y == self.y - 1:
-            return "U"
+            return CMD_UP
         return ""
 
     def __str__(self):

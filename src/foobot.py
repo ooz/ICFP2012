@@ -1,5 +1,6 @@
 import time
 
+from constants import *
 from minemap import Map
 
 class Robot:
@@ -29,7 +30,7 @@ class Robot:
     def meaningfulLastStep(self):
         if (self.mmap.getFoundLambdaCount() > 0):
             return ""
-        reachable = self.mmap.inReach(92) # '\\'
+        reachable = self.mmap.inReach(ORD_LAMBDA)
         for move in reachable:
             if (not self.wouldGetKilledFor(move)):
                 return move
