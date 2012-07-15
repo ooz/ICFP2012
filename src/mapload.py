@@ -39,7 +39,7 @@ class MapLoader:
                 elif "Trampoline" in elems:
                     trampos.append((elems[1], elems[3]))
 
-        return Map(lines, [water, flood, proof, growth, razors], trampos)
+        return Map(lines, [water, flood, proof, growth, razors, trampos])
 
     def mapFromStdin(self):
         lines = sys.stdin.readlines()
