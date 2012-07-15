@@ -98,7 +98,6 @@ class MrScaredGreedy(Robot):
         tar = None
         path = ""
         while (not self.mmap.isTerminated() and 
-                self.mmap.getLeftCommands() > 1 and 
                 (self.mmap.isLiftOpen() or 
                     len(skip) < self.mmap.getTotalLambdaCount()) and
                 not (tar == self.mmap.getLift() and path == "")):
