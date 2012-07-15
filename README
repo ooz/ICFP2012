@@ -1,6 +1,7 @@
-Order number:
+ICFP 2012
+=========
 
-    94687134
+http://icfpcontest2012.wordpress.com/
 
 Lightning entry:
 
@@ -15,8 +16,17 @@ Plan:
     - maybe: find optional "extraction point" for cluster
  * actively moving rocks, avoid final path blocking
  * maybe: evolutionary optimization of some parameters
+ * MapImpact: classify actions that strongly (block paths) alter the map
 
-One man army:
 
-    Oliver Zscheyge <oliverzscheyge@gmail.com>
+Malfunctioning robots:
+
+ * Eve: let the robot write "EVE?" and run around in circles till he's out of moves
+   if map too small: just move rocks and walk around
+ * Highlander: Find a pile of rocks or build a pile of rocks and wait on top of it
+
+
+"TEAM" "foo" says thank you!
+============================
+Oliver Zscheyge
 
