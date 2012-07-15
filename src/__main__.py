@@ -18,9 +18,14 @@ parser.add_option("-v", "--verbose",
                           (each step is delayed to be easier followed by a human). 
                           Last line printed is the command sequence.
                           You can alter the sleep duration with the --sleep option.""")
+parser.add_option("-t", "--tv",
+                  action="store_true", dest="tv", default=False,
+                  help="""Like -v except it clears the screen before printing every new
+                          frame. Use -v for debugging/getting a trace. 
+                          Use -t for just enjoying the show!""")
 parser.add_option("-s", "--sleep", type="float", dest="sleep", default=1.0,
                   help="""Time to sleep after one step was executed.
-                          Only has an effect in combination with the --verbose flag.""")
+                          Only has an effect in combination with the -v or -t flag.""")
 
 BOT = None
 def sigintHandler(signal, frame):
@@ -43,9 +48,9 @@ if __name__ == "__main__":
     
     if (m != None):
         from foobot import *
-        BOT = MrScaredGreedy(m)
-        if (options.verbose):
-            BOT.solveVisual(options.sleep, options.verbose, options.verbose)
+        BOT = MrScaredGreedy(m, [options.sleep, (options.verbose or options.tv), options.tv])
+        if (options.verbose or options.tv):
+            BOT.solveVisual()
         else:
             BOT.solve()
         print BOT.getCommands()

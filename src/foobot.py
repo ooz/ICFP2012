@@ -1,11 +1,17 @@
 import time
 
 from constants import *
+import cli
 from minemap import Map
 
 class Robot:
-    def __init__(self, minemap):
+    def __init__( self, minemap
+                , options = [0.0, False, False]
+                ):
         self.mmap    = minemap
+        self.sleep = options[0]
+        self.displ = options[1]
+        self.clear = options[2]
 
     def getMap(self):
         return self.mmap
@@ -20,57 +26,39 @@ class Robot:
                 bot.execute(c)
         return bot.mmap.isDead()
 
-# TODO: Redundant, since you dont need to abort in order to get the
-#       "survival" bonus!
-    """
-    Only one move left? 
-    ABORT if at least 1 lambda, 
-     don't abort if no lambda and one lambda gettable with one step!
-    """
-    def meaningfulLastStep(self):
-        if (self.mmap.getFoundLambdaCount() > 0):
-            return ""
-        reachable = self.mmap.inReach(ORD_LAMBDA)
-        for move in reachable:
-            if (not self.wouldGetKilledFor(move)):
-                return move
-        return ""
-
-        
-
-    """ Visual methods, separated to save one condition check :P """
-    def executeVisual(self, cmds, sleepSecs = 0.0, 
-                      printMap = False, printScore = False):
-        for c in cmds:
-            if (not self.mmap.isTerminated()):
-                self.execute(c)
-                time.sleep(sleepSecs)
-                if printMap:
-                    print ""
-                    self.mmap.printCurrent()
-                if printScore:
-                    print "Score " + str(self.mmap.getScore())
-        return self
-
-    def solveVisual(self, sleepSecs = 0.0, printMap = False, printScore = False):
-        return self
-
-    """ Normal execute and solve """
     def execute(self, cmds):
         for c in cmds:
             if (not self.mmap.isTerminated()):
                 self.mmap.move(c)
         return self
 
-    """ To override """
-    def solve(self):
+    def executeVisual(self, cmds):
+        for c in cmds:
+            if (not self.mmap.isTerminated()):
+                self.mmap.move(c)
+                time.sleep(self.sleep)
+                if self.clear:
+                    cli.clear()
+                if self.displ:
+                    print ""
+                    self.mmap.printCurrent()
+                    print "Score " + str(self.mmap.getScore())
         return self
 
+    def solve(self):
+        while (not self.mmap.isTerminated()):
+            self.step(self.execute)
+        return self
 
+    def solveVisual(self):
+        while (not self.mmap.isTerminated()):
+            self.step(self.executeVisual)
+        return self
 
-# TODO: update score formula!
-#       even non-aborted runs yields full 50 pts per lambda
-#       
+    """ To override """
+    def step(self, execute):
+        return execute(CMD_ABORT)
+
 """
 General
 =======
@@ -88,49 +76,37 @@ Rocks
 from astar import AStar
 
 class MrScaredGreedy(Robot):
-    def solve(self):
-        return self.solveVisual()
+    def __init__( self, minemap
+                , options = [0.0, False, False]
+                ):
+        Robot.__init__(self, minemap, options)
 
-    def solveVisual(self, sleepSecs = 0.0, printEmptyLine = False, printScore = False):
-        maxSteps = self.mmap.getMaxCommandCount()
+        self.skip = []
+        self.tar = None
+        self.path = ""
 
-        skip = []
-        tar = None
-        path = ""
-        while (not self.mmap.isTerminated() and 
-                (self.mmap.isLiftOpen() or 
-                    len(skip) < self.mmap.getTotalLambdaCount()) and
-                not (tar == self.mmap.getLift() and path == "")):
-            if self.mmap.isLiftOpen():
-                tar = self.mmap.getLift()
-                aStar = AStar(self.mmap.copy(), tar)
-                path = aStar.process().path()
-            else:
-                tars = []
-                for l in self.mmap.getLambdas():
-                    aStar = AStar(self.mmap.copy(), l)
-                    path = aStar.process().path()
-                    tars.append((l, path))
-                minmin = reduce(lambda a, b: min(a, b), map(lambda t: len(t[1]), tars))
-                tar, path = filter(lambda t: len(t[1]) == minmin, tars)[0]
+    def step(self, execute):
+        if self.mmap.isLiftOpen():
+            self.tar = self.mmap.getLift()
+            aStar = AStar(self.mmap.copy(), tar)
+            self.path = aStar.process().path()
+        else:
+            self.tars = []
+            for l in self.mmap.getLambdas():
+                aStar = AStar(self.mmap.copy(), l)
+                self.path = aStar.process().path()
+                self.tars.append((l, self.path))
+            minmin = reduce(lambda a, b: min(a, b), map(lambda t: len(t[1]), self.tars))
+            self.tar, self.path = filter(lambda t: len(t[1]) == minmin, self.tars)[0]
 
-            if (not self.wouldGetKilledFor(path) and 
-                self.mmap.getLeftCommands() > len(path) and
-                len(path) > 0):
-                self.executeVisual(path, sleepSecs, printEmptyLine, printScore)
-                skip = []
-            else:
-                skip.append(tar)
+        if (not self.wouldGetKilledFor(self.path) and 
+            self.mmap.getLeftCommands() > len(self.path) and
+            len(self.path) > 0):
+            execute(self.path)
+            self.skip = []
+        else:
+            self.skip.append(self.tar)
 
-        if (not self.mmap.isTerminated()):
-            """ Just """
-            last = self.meaningfulLastStep()
-            if last != "":
-                self.executeVisual(last, sleepSecs, printEmptyLine, printScore)
-            else:
-                self.abort()
-        if printScore:
-            print "\nScore " + str(self.mmap.getScore())
         return self
 
 
