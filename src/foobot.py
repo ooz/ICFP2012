@@ -51,9 +51,31 @@ class Robot:
         return self
 
     def solveVisual(self):
+        self.mmap.printCurrent()
         while (not self.mmap.isTerminated()):
             self.step(self.executeVisual)
         return self
+
+#    def interactive(self):
+#        self.mmap.printCurrent()
+#        c = cli.getChar()
+#        while (    c not in ['q', 'e'] 
+#               and not self.mmap.isTerminated()):
+#            action = ""
+#            if c == 'w':
+#                action = CMD_UP
+#            elif c == 'a':
+#                action = CMD_LEFT
+#            elif c == 's':
+#                action = CMD_DOWN
+#            elif c == 'd':
+#                action = CMD_RIGHT
+#            elif c == ' ':
+#                action = "S"
+#            self.executeVisual(action)
+#            c = cli.getChar()
+#        return self
+
 
     """ To override """
     def step(self, execute):

@@ -248,6 +248,10 @@ class Map:
         self.update()
         return self
 
+# TODO: implement!
+    def shave(self):
+        pass
+
     def __moveLR(self, xOffset):
         x = self.__robot[0]
         y = self.__robot[1]

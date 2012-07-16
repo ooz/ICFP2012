@@ -1,3 +1,4 @@
 #!/bin/bash
 
 python src -t -s 0.8
+#python src -i

@@ -12,6 +12,12 @@ from   optparse import OptionParser
 usage  = "Usage: %prog [options] file(s)" 
 parser = OptionParser(usage = usage)
 
+#parser.add_option("-i", "--interactive",
+#                  action="store_true", dest="interactive", default=False,
+#                  help="""Control the Robot manually:
+#                          W, A, S, D ... Up, Left, Down, Right
+#                          [Space]    ... Shave
+#                          ESC, q, e  ... any of those key exists the game""")
 parser.add_option("-v", "--verbose",
                   action="store_true", dest="verbose", default=False,
                   help="""Display the solving process live on stdout 
@@ -49,6 +55,9 @@ if __name__ == "__main__":
     if (m != None):
         from foobot import *
         BOT = MrScaredGreedy(m, [options.sleep, (options.verbose or options.tv), options.tv])
+#        if (options.interactive):
+#            BOT.interactive()
+#        el
         if (options.verbose or options.tv):
             BOT.solveVisual()
         else:
