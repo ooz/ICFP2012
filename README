@@ -18,6 +18,8 @@ Plan:
  * maybe: evolutionary optimization of some parameters
  * MapImpact: classify actions that strongly (block paths) alter the map
 
+ * Explicit earth clearing to move a rock
+
 
 Malfunctioning robots:
 
