@@ -88,7 +88,7 @@ class MrScaredGreedy(Robot):
     def step(self, execute):
         if self.mmap.isLiftOpen():
             self.tar = self.mmap.getLift()
-            aStar = AStar(self.mmap.copy(), tar)
+            aStar = AStar(self.mmap.copy(), self.tar)
             self.path = aStar.process().path()
         else:
             self.tars = []

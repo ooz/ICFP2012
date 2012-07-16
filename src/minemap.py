@@ -161,11 +161,11 @@ class Map:
     def __isStoppingRock(self, x, y):
         return (self.get(x, y) == ORD_EMPTY and self.get(x, y + 1) == ORD_ROCK)
 
-    def set(self, x, y, b):
+    def __set(self, x, y, b):
         if (x >= 0 and y >= 0 and x < self.n and y < self.m):
             self.grid[y][x] = b
         return self
-    def setChar(self, x, y, c):
+    def __setChar(self, x, y, c):
         if (x >= 0 and y >= 0 and x < self.n and y < self.m):
             self.grid[y][x] = ord(c)
         return self
@@ -192,24 +192,24 @@ class Map:
                     cc = self.__updateGet(x, y - 1)
                     if (cc == ORD_EMPTY):
                         """ Falling rock """
-                        self.set(x, y, ORD_EMPTY)
-                        self.set(x, y - 1, c)
+                        self.__set(x, y, ORD_EMPTY)
+                        self.__set(x, y - 1, c)
                         self.checkForRockKill(x, y - 1)
                     elif (cc in [ORD_ROCK, ORD_HOROCK]):
                         cc  = self.__updateGet(x + 1, y)
                         ccc = self.__updateGet(x + 1, y - 1)
                         if (cc == ORD_EMPTY and ccc == ORD_EMPTY):
                             """ Right sliding rock """
-                            self.set(x    , y    , ORD_EMPTY)
-                            self.set(x + 1, y - 1, c)
+                            self.__set(x    , y    , ORD_EMPTY)
+                            self.__set(x + 1, y - 1, c)
                             self.checkForRockKill(x + 1, y - 1)
                         else:
                             cc  = self.__updateGet(x - 1, y)
                             ccc = self.__updateGet(x - 1, y - 1)
                             if (cc == ORD_EMPTY and ccc == ORD_EMPTY):
                                 """ Left sliding rock """
-                                self.set(x    , y    , ORD_EMPTY)
-                                self.set(x - 1, y - 1, c)
+                                self.__set(x    , y    , ORD_EMPTY)
+                                self.__set(x - 1, y - 1, c)
                                 self.checkForRockKill(x - 1, y - 1)
 
                     elif (cc == ORD_LAMBDA):
@@ -218,12 +218,12 @@ class Map:
                         ccc = self.__updateGet(x + 1, y - 1)
                         if (cc == ORD_EMPTY and ccc == ORD_EMPTY):
                             """ Right sliding rock """
-                            self.set(x    , y    , ORD_EMPTY)
-                            self.set(x + 1, y - 1, c)
+                            self.__set(x    , y    , ORD_EMPTY)
+                            self.__set(x + 1, y - 1, c)
                             self.checkForRockKill(x + 1, y - 1)
                 elif (c == ORD_CLOSED_LIFT):
                     if (0 == len(self.__lambdas)):
-                        self.set(x, y, ORD_OPEN_LIFT)
+                        self.__set(x, y, ORD_OPEN_LIFT)
         self.checkForWin()
         return self
 
@@ -253,8 +253,8 @@ class Map:
         y = self.__robot[1]
         c = self.get(x + xOffset, y)
         if (c in [ORD_EMPTY, ORD_EARTH, ORD_LAMBDA, ORD_OPEN_LIFT]):
-            self.set(x, y, ORD_EMPTY)
-            self.set(x + xOffset, y, ORD_ROBOT)
+            self.__set(x, y, ORD_EMPTY)
+            self.__set(x + xOffset, y, ORD_ROBOT)
             self.__robot[0] = x + xOffset
             if (c == ORD_LAMBDA):
                 self.__collectLambda(x + xOffset, y)
@@ -264,23 +264,23 @@ class Map:
         elif (c in [ORD_ROCK, ORD_HOROCK]):
             cc = self.get(x + (xOffset * 2), y)
             if (cc == ORD_EMPTY):
-                self.set(x, y, ORD_EMPTY)
-                self.set(x + xOffset, y, ORD_ROBOT)
+                self.__set(x, y, ORD_EMPTY)
+                self.__set(x + xOffset, y, ORD_ROBOT)
                 self.__robot[0] = x + xOffset
-                self.set(x + (xOffset * 2), y, c)
+                self.__set(x + (xOffset * 2), y, c)
                 return True
         return False
 
     def __moveDU(self, yOffset):
         x = self.__robot[0]
         y = self.__robot[1]
-        c = self.get(x, yOffset)
+        c = self.get(x, y + yOffset)
         if (c in [ORD_EMPTY, ORD_EARTH, ORD_LAMBDA, ORD_OPEN_LIFT]):
-            self.set(x, y, ORD_EMPTY)
-            self.set(x, yOffset, ORD_ROBOT)
-            self.__robot[1] = yOffset
+            self.__set(x, y, ORD_EMPTY)
+            self.__set(x, y + yOffset, ORD_ROBOT)
+            self.__robot[1] = y + yOffset
             if (c == ORD_LAMBDA):
-                self.__collectLambda(x, yOffset)
+                self.__collectLambda(x, y + yOffset)
             elif (c == ORD_OPEN_LIFT):
                 self.__win = True
             return True
@@ -296,15 +296,17 @@ class Map:
     def printInitial(self):
         for l in reversed(self.initialGrid):
             print l
-        return self
     def printCurrent(self):
         for l in reversed(self.grid):
             print l
-        return self
     def printFlooding(self):
         print "Water " + str(self.water)
         print "Flooding " + str(self.flood)
         print "Waterproof " + str(self.proof)
+    
+    def printBeard(self):
+        print "Growth " + str(self.growth)
+        print "Razors " + str(self.razors)
 
     def printAll(self):
         print "Init:"
@@ -313,5 +315,7 @@ class Map:
         self.printCurrent()
         print ""
         self.printFlooding()
+        print ""
+        self.printBeard()
         return self
 
